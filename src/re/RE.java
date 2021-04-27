@@ -8,17 +8,16 @@ import fa.State;
 import fa.nfa.NFAState;
 
 public class RE implements REInterface {
-    String regEx; //regular expression
-
+    String regEx; // regular expression
+    int stateInc = 0;
 
     /**
      * constructor of the RE, this is the RegEx Parser
      **/
     public RE(String RegEx) {
         this.regEx = RegEx;
-
+        stateInc = 0;
     }
-
 
     /**
      * @return The NFA that is built by a given regular expression
@@ -31,13 +30,11 @@ public class RE implements REInterface {
     /*
      * Generate an NFA from a regular expression
      *
-     * */
+     */
     private NFA regEx() {
 
-
-        return null; //place holder, delete later
+        return null; // place holder, delete later
     }
-
 
     /**
      * returns the next item of input without consuming it
@@ -56,18 +53,17 @@ public class RE implements REInterface {
         char c = peek();
         eat(c);
 
-        return 0;//placer holder
+        return 0;// placer holder
     }
 
     /**
      * consumes the next item of input, failing if not equal to input item(char c).
      */
     private void eat(char c) {
-        if (peek() == c) { //peak() returns the next item of input without consuming it
-            this.regEx = this.regEx.substring(1);//the item at index 0 is consumed
+        if (peek() == c) { // peak() returns the next item of input without consuming it
+            this.regEx = this.regEx.substring(1);// the item at index 0 is consumed
         } else {
-            throw new
-                    RuntimeException("Expected: " + c + "; got: " + peek());
+            throw new RuntimeException("Expected: " + c + "; got: " + peek());
         }
     }
 
@@ -80,36 +76,34 @@ public class RE implements REInterface {
         return regEx.length() > 0;
     }
 
-
     /**
      * @return an NFA
      */
     private NFA term() {
-        NFA factor = new NFA(); //instantiate a new NFA that is empty
+        NFA factor = new NFA(); // instantiate a new NFA that is empty
 
-        //while it has not reached the boundary of a term or the end of the input:
+        // while it has not reached the boundary of a term or the end of the input:
         while (more() && peek() != ')' && peek() != '|') {
             NFA nextFactor = factor();
-//            factor = new Sequence(factor,nextFactor) ;
+            // factor = new Sequence(factor,nextFactor) ;
         }
-//
+        //
         return factor;
 
     }
-
 
     /**
      *
      */
     private NFA factor() {
 
-//        RegEx base = base() ;
-//
-//        while (more() && peek() == '*') {
-//            eat('*') ;
-//            base = new Repetition(base) ;
-//        }
-//
+        // RegEx base = base() ;
+        //
+        // while (more() && peek() == '*') {
+        // eat('*') ;
+        // base = new Repetition(base) ;
+        // }
+        //
         return null;
     }
 
@@ -119,21 +113,20 @@ public class RE implements REInterface {
     private NFA base() {
         NFA base = new NFA();
 
-        if(peek() == '('){
-                eat('(') ;
-                base = regEx();//might be wrong
-                eat(')') ;
+        if (peek() == '(') {
+            eat('(');
+            base = regEx();// might be wrong
+            eat(')');
 
-        }else{
-            //NFAState startState = new NFAState();
-            //NFAState endState =   new NFAState();
-
+        } else {
+            NFAState startS = new NFAState(String.valueOf(stateInc));
+            NFAState endS = new NFAState(String.valueOf(stateInc));
+            base.addStartState(startS.getName());
+            base.addFinalState(endS.getName());
+            base.addTransition(startS.getName(), next(), endS.getName());
 
         }
-
-
         return base;
     }
-
 
 }
