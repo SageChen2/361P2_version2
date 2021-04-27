@@ -13,7 +13,7 @@ public class RE implements REInterface {
 
     /**
      * constructor of the RE, this is the RegEx Parser
-     * **/
+     **/
     public RE(String RegEx) {
         this.regEx = RegEx;
 
@@ -22,7 +22,7 @@ public class RE implements REInterface {
 
     /**
      * @return The NFA that is built by a given regular expression
-     * */
+     */
     @Override
     public NFA getNFA() {
         return regEx();
@@ -61,8 +61,7 @@ public class RE implements REInterface {
 
     /**
      * consumes the next item of input, failing if not equal to input item(char c).
-     *
-     * */
+     */
     private void eat(char c) {
         if (peek() == c) { //peak() returns the next item of input without consuming it
             this.regEx = this.regEx.substring(1);//the item at index 0 is consumed
@@ -72,32 +71,36 @@ public class RE implements REInterface {
         }
     }
 
+    /**
+     * checks if there is more input available.
+     *
+     * @return true if the length of regular expression is greater than 0
+     **/
     private boolean more() {
-        return regEx.length() > 0 ;
+        return regEx.length() > 0;
     }
 
 
     /**
-     *
      * @return an NFA
-     * */
+     */
     private NFA term() {
-           NFA factor = new NFA(); //instantiate a new NFA that is empty
-//
+        NFA factor = new NFA(); //instantiate a new NFA that is empty
+
+        //while it has not reached the boundary of a term or the end of the input:
         while (more() && peek() != ')' && peek() != '|') {
-//            RegEx nextFactor = factor() ;
+            NFA nextFactor = factor();
 //            factor = new Sequence(factor,nextFactor) ;
-       }
+        }
 //
-       return factor;
+        return factor;
 
     }
 
 
     /**
      *
-     *
-     * */
+     */
     private NFA factor() {
 
 //        RegEx base = base() ;
@@ -107,35 +110,30 @@ public class RE implements REInterface {
 //            base = new Repetition(base) ;
 //        }
 //
-       return null ;
+        return null;
     }
 
     /**
      *
-     *
-     * */
+     */
     private NFA base() {
+        NFA base = new NFA();
 
-        switch (peek()) {
-            case '(':
+        if(peek() == '('){
                 eat('(') ;
-               NFA r = regEx() ;
+                base = regEx();//might be wrong
                 eat(')') ;
-                return r ;
-//
-//            case '\\':
-//                eat ('\\') ;
-//                char esc = next() ;
-//                return new Primitive(esc) ;
-//
-                default:
-               return null;//new Primitive(next()) ;
+
+        }else{
+            //NFAState startState = new NFAState();
+            //NFAState endState =   new NFAState();
+
+
         }
+
+
+        return base;
     }
-
-
-
-
 
 
 }
