@@ -8,10 +8,12 @@ import fa.State;
 import fa.nfa.NFAState;
 
 public class RE implements REInterface {
-    String regEx;
+    String regEx; //regular expression
 
 
-    //constructor of RE
+    /**
+     * constructor of the RE, this is the RegEx Parser
+     * **/
     public RE(String RegEx) {
         this.regEx = RegEx;
 
@@ -57,9 +59,13 @@ public class RE implements REInterface {
         return 0;//placer holder
     }
 
+    /**
+     * consumes the next item of input, failing if not equal to input item(char c).
+     *
+     * */
     private void eat(char c) {
-        if (peek() == c) {
-            this.regEx = this.regEx.substring(1);
+        if (peek() == c) { //peak() returns the next item of input without consuming it
+            this.regEx = this.regEx.substring(1);//the item at index 0 is consumed
         } else {
             throw new
                     RuntimeException("Expected: " + c + "; got: " + peek());
