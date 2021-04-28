@@ -84,7 +84,7 @@ public class RE implements REInterface {
     private NFA term() {
         NFA factor = new NFA(); // instantiate a new NFA that is empty
 
-        // while it has not reached the boundary of a term or the end of the input:
+        // while it has not reached the boundary of a term or the end of the input: (for example "term | term")
         while (more() && peek() != ')' && peek() != '|') {
             NFA nextFactor = factor();
             // factor = new Sequence(factor,nextFactor) ;
@@ -95,12 +95,40 @@ public class RE implements REInterface {
     }
 
     /**
+     * to concatenate 2 NFAs (A regEx is a term and it is also an NFA), they are 2 terms seperated by '|'
+     *
+     * @return combined NFA of the first 2 NFAs
+     * */
+    private NFA concat(NFA nfa1, NFA nfa2){
+    //concatenation of NFA requires to 'link' the final states of the 1st NFA to the start state pf the 2nd NFA
+        Set<State> finalStatesOfNfa1 = nfa1.getFinalStates();
+        String startStateOfNfa2 = nfa1.getStartState().getName();
+
+        //need to combine alphabet, states and transitions
+
+        //combine all the states from nfa2 to nfa1
+        nfa1.addNFAStates(nfa2.getStates());
+
+        //combine the alphabets of nfa1 and nfa2 and store in the alphabet of nfa1
+        nfa1.addAbc(nfa2.getABC());
+
+        //iterate through
+        Iterator<State> itr = finalStatesOfNfa1.iterator();
+
+
+        return nfa1;
+    }
+
+
+    /**
      *
      */
     private NFA factor() {
 
         NFA base = base();
 
+        //A factor is a base followed by a possibly empty sequence of '*'.
+        //while there is more input and the next item of input is a *
         while (more() && peek() == '*') {
             eat('*');
 
@@ -114,6 +142,11 @@ public class RE implements REInterface {
 
             }
 
+
+
+
+
+
         }
 
         return base;
@@ -123,6 +156,7 @@ public class RE implements REInterface {
      *
      */
     private NFA base() {
+        //A base is a character, an escaped character, or a parenthesized regular expression.
         NFA base = new NFA();
 
         if (peek() == '(') {
