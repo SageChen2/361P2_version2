@@ -155,10 +155,14 @@ public class RE implements REInterface {
             Iterator<State> itr = setOfStates.iterator();
             while (itr.hasNext()) {
                 base.addTransition(itr.next().getName(), 'e', base.getStartState().getName());// might be wrong
-
             }
-
-
+            NFAState starter = new NFAState(String.valueOf(stateInc));    // create a new starter state
+            base.addState(starter.getName());   // add created state
+            base.addTransition(starter.getName(),'e',base.getStartState().getName());    // new state needs transition
+            base.addStartState(starter.getName());  // set new starter to the start state
+            base.addFinalState(starter.getName());
+            // sequence is possibly empty, so new state also added to final states
+            //double check last few lines\
         }
 
         return base;
