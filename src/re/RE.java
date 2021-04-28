@@ -81,13 +81,22 @@ public class RE implements REInterface {
     /**
      * @return an NFA
      */
-    private NFA term() {
+    private NFA term() { //A term is a possibly empty sequence of factors.
         NFA factor = new NFA(); // instantiate a new NFA that is empty
 
         // while it has not reached the boundary of a term or the end of the input: (for example "term | term")
         while (more() && peek() != ')' && peek() != '|') {
             NFA nextFactor = factor();
             // factor = new Sequence(factor,nextFactor) ;
+            if (factor.getStates().isEmpty()) {
+                factor = nextFactor;
+            } else {
+
+                factor = concat(factor, nextFactor);
+
+            }
+
+
         }
         //
         return factor;
@@ -98,9 +107,9 @@ public class RE implements REInterface {
      * to concatenate 2 NFAs (A regEx is a term and it is also an NFA), they are 2 terms seperated by '|'
      *
      * @return combined NFA of the first 2 NFAs
-     * */
-    private NFA concat(NFA nfa1, NFA nfa2){
-    //concatenation of NFA requires to 'link' the final states of the 1st NFA to the start state pf the 2nd NFA
+     */
+    private NFA concat(NFA nfa1, NFA nfa2) {
+        //concatenation of NFA requires to 'link' the final states of the 1st NFA to the start state pf the 2nd NFA
         Set<State> finalStatesOfNfa1 = nfa1.getFinalStates();
         String startStateOfNfa2 = nfa1.getStartState().getName(); // there is only 1 start state
 
@@ -115,9 +124,9 @@ public class RE implements REInterface {
         //iterate through all the final states of nfa1 and set them to be non-final states
         //also add nfa1's transitions to the start of nfa2
         Iterator<State> itr = finalStatesOfNfa1.iterator();
-        while(itr.hasNext()){
+        while (itr.hasNext()) {
             State state = itr.next(); // might be wrong
-            ((NFAState)state).setNonFinal(); //cast all the State objects into NFAState and set them to be non-final
+            ((NFAState) state).setNonFinal(); //cast all the State objects into NFAState and set them to be non-final
             nfa1.addTransition(state.getName(), 'e', startStateOfNfa2);//from the 'non-final' states, use an empty string e, to transit to the start state of nfa2
 
         }
@@ -144,14 +153,10 @@ public class RE implements REInterface {
 
             //transition from an end state back to the start state
             Iterator<State> itr = setOfStates.iterator();
-            while(itr.hasNext()){
+            while (itr.hasNext()) {
                 base.addTransition(itr.next().getName(), 'e', base.getStartState().getName());// might be wrong
 
             }
-
-
-
-
 
 
         }
