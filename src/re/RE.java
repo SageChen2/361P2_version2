@@ -26,17 +26,7 @@ public class RE implements REInterface {
      */
     @Override
     public NFA getNFA() {
-        NFA noUnion = term();
-
-        if(more() && peek() == '|'){
-            eat('|');
-            NFA regEx = new NFA();
-            NFA retUnion = union(noUnion, regEx);
-            return retUnion;
-        }
-        else{
-            return noUnion;
-        }
+        return regEx();
     }
 
     /*
@@ -45,23 +35,17 @@ public class RE implements REInterface {
      */
     private NFA regEx() {
 
-        NFA term = term();//parse at least one term
+        NFA noUnion = term();
 
-        if (more() && peek() == '|') {
-
+        if(more() && peek() == '|'){
             eat('|');
-            NFA regex = regEx(); //after '|', parse another term
-            //concatenate 2 NFAs
-
-
-
-
-        } else {
-            return term;
+            NFA isRegex = new NFA();
+            NFA retUnion = union(noUnion, isRegex);
+            return retUnion;
         }
-
-
-        return null; // place holder, delete later
+        else{
+            return noUnion;
+        }
     }
 
     /**
