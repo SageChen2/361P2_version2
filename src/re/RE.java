@@ -35,6 +35,22 @@ public class RE implements REInterface {
      */
     private NFA regEx() {
 
+        NFA term = term();//parse at least one term
+
+        if (more() && peek() == '|') {
+
+            eat('|');
+            NFA regex = regEx(); //after '|', parse another term
+            //concatenate 2 NFAs
+
+
+
+
+        } else {
+            return term;
+        }
+
+
         return null; // place holder, delete later
     }
 
@@ -78,6 +94,28 @@ public class RE implements REInterface {
         return regEx.length() > 0;
     }
 
+
+    /**
+     *  combine 2 NFAs into 1 NFA (the order does not matter)
+     *
+     * @return the combined NFA
+     * */
+    private NFA union(NFA nfa1, NFA nfa2){
+            NFA result = new NFA();
+
+            ///start state(might be wrong)
+            //NFAState startState = new NFAState(String.valueOf(stateInc));
+
+            String startState = String.valueOf(stateInc);//might be wrong
+            result.addStartState(startState);
+
+
+            return result;
+
+    }
+
+
+
     /**
      * @return an NFA
      */
@@ -87,10 +125,11 @@ public class RE implements REInterface {
         // while it has not reached the boundary of a term or the end of the input: (for example "term | term")
         while (more() && peek() != ')' && peek() != '|') {
             NFA nextFactor = factor();
-            // factor = new Sequence(factor,nextFactor) ;
+
+            //if NFA has no states
             if (factor.getStates().isEmpty()) {
                 factor = nextFactor;
-            } else {
+            } else {//if there is more than one term in the NFA.
 
                 factor = concat(factor, nextFactor);
 
@@ -105,12 +144,12 @@ public class RE implements REInterface {
 
     /**
      * to concatenate 2 NFAs (A regEx is a term and it is also an NFA), they are 2 terms seperated by '|'
-     *
+     * the order of concatenation is to add the nfa2 onto the nfa1(order matters)
      * @return combined NFA of the first 2 NFAs
      */
     private NFA concat(NFA nfa1, NFA nfa2) {
         //concatenation of NFA requires to 'link' the final states of the 1st NFA to the start state pf the 2nd NFA
-        Set<State> finalStatesOfNfa1 = nfa1.getFinalStates();
+       // Set<State> finalStatesOfNfa1 = nfa1.getFinalStates(); // can be simplified
         String startStateOfNfa2 = nfa1.getStartState().getName(); // there is only 1 start state
 
         //need to combine alphabet, states and transitions
@@ -123,7 +162,7 @@ public class RE implements REInterface {
 
         //iterate through all the final states of nfa1 and set them to be non-final states
         //also add nfa1's transitions to the start of nfa2
-        Iterator<State> itr = finalStatesOfNfa1.iterator();
+        Iterator<State> itr = nfa1.getFinalStates().iterator();
         while (itr.hasNext()) {
             State state = itr.next(); // might be wrong
             ((NFAState) state).setNonFinal(); //cast all the State objects into NFAState and set them to be non-final
@@ -158,7 +197,7 @@ public class RE implements REInterface {
             }
             NFAState starter = new NFAState(String.valueOf(stateInc));    // create a new starter state
             base.addState(starter.getName());   // add created state
-            base.addTransition(starter.getName(),'e',base.getStartState().getName());    // new state needs transition
+            base.addTransition(starter.getName(), 'e', base.getStartState().getName());    // new state needs transition
             base.addStartState(starter.getName());  // set new starter to the start state
             base.addFinalState(starter.getName());
             // sequence is possibly empty, so new state also added to final states
