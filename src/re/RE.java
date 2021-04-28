@@ -1,5 +1,7 @@
 package re;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -97,14 +99,24 @@ public class RE implements REInterface {
      */
     private NFA factor() {
 
-        // RegEx base = base() ;
-        //
-        // while (more() && peek() == '*') {
-        // eat('*') ;
-        // base = new Repetition(base) ;
-        // }
-        //
-        return null;
+        NFA base = base();
+
+        while (more() && peek() == '*') {
+            eat('*');
+
+            Set<State> setOfStates = base.getFinalStates(); //there exist multiple end states
+
+
+            //transition from an end state back to the start state
+            Iterator<State> itr = setOfStates.iterator();
+            while(itr.hasNext()){
+                base.addTransition(itr.next().getName(), 'e', base.getStartState().getName());// might be wrong
+
+            }
+
+        }
+
+        return base;
     }
 
     /**
