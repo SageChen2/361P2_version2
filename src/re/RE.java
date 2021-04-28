@@ -102,18 +102,25 @@ public class RE implements REInterface {
     private NFA concat(NFA nfa1, NFA nfa2){
     //concatenation of NFA requires to 'link' the final states of the 1st NFA to the start state pf the 2nd NFA
         Set<State> finalStatesOfNfa1 = nfa1.getFinalStates();
-        String startStateOfNfa2 = nfa1.getStartState().getName();
+        String startStateOfNfa2 = nfa1.getStartState().getName(); // there is only 1 start state
 
         //need to combine alphabet, states and transitions
 
-        //combine all the states from nfa2 to nfa1
+        //combine all the states from nfa2 to nfa1 (the order might cause problem)
         nfa1.addNFAStates(nfa2.getStates());
 
         //combine the alphabets of nfa1 and nfa2 and store in the alphabet of nfa1
         nfa1.addAbc(nfa2.getABC());
 
-        //iterate through
+        //iterate through all the final states of nfa1 and set them to be non-final states
+        //also add nfa1's transitions to the start of nfa2
         Iterator<State> itr = finalStatesOfNfa1.iterator();
+        while(itr.hasNext()){
+            State state = itr.next(); // might be wrong
+            ((NFAState)state).setNonFinal(); //cast all the State objects into NFAState and set them to be non-final
+            nfa1.addTransition(state.getName(), 'e', startStateOfNfa2);//from the 'non-final' states, use an empty string e, to transit to the start state of nfa2
+
+        }
 
 
         return nfa1;
