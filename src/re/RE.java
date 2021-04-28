@@ -39,9 +39,8 @@ public class RE implements REInterface {
 
         if(more() && peek() == '|'){
             eat('|');
-            NFA isRegex = new NFA();
-            NFA retUnion = union(noUnion, isRegex);
-            return retUnion;
+            NFA isRegex = regEx();
+            return union(noUnion, isRegex);
         }
         else{
             return noUnion;
