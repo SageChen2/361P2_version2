@@ -26,7 +26,17 @@ public class RE implements REInterface {
      */
     @Override
     public NFA getNFA() {
-        return regEx();
+        NFA noUnion = term();
+
+        if(more() && peek() == '|'){
+            eat('|');
+            NFA regEx = new NFA();
+            NFA retUnion = union(noUnion, regEx);
+            return retUnion;
+        }
+        else{
+            return noUnion;
+        }
     }
 
     /*
@@ -106,9 +116,14 @@ public class RE implements REInterface {
             ///start state(might be wrong)
             //NFAState startState = new NFAState(String.valueOf(stateInc));
 
-            String startState = String.valueOf(stateInc);//might be wrong
+            String startState = String.valueOf(stateInc++);//might be wrong
             result.addStartState(startState);
-
+            result.addNFAStates(nfa1.getStates());
+            result.addNFAStates(nfa2.getStates());
+            result.addTransition(startState, 'e', nfa1.getStartState().getName());
+            result.addTransition(startState, 'e', nfa2.getStartState().getName());
+            result.addAbc(nfa1.getABC());
+            result.addAbc(nfa2.getABC());
 
             return result;
 
@@ -195,7 +210,7 @@ public class RE implements REInterface {
             while (itr.hasNext()) {
                 base.addTransition(itr.next().getName(), 'e', base.getStartState().getName());// might be wrong
             }
-            NFAState starter = new NFAState(String.valueOf(stateInc));    // create a new starter state
+            NFAState starter = new NFAState(String.valueOf(stateInc++));    // create a new starter state
             base.addState(starter.getName());   // add created state
             base.addTransition(starter.getName(), 'e', base.getStartState().getName());    // new state needs transition
             base.addStartState(starter.getName());  // set new starter to the start state
@@ -220,8 +235,8 @@ public class RE implements REInterface {
             eat(')');
 
         } else {
-            NFAState startS = new NFAState(String.valueOf(stateInc));
-            NFAState endS = new NFAState(String.valueOf(stateInc));
+            NFAState startS = new NFAState(String.valueOf(stateInc++));
+            NFAState endS = new NFAState(String.valueOf(stateInc++));
             base.addStartState(startS.getName());
             base.addFinalState(endS.getName());
             base.addTransition(startS.getName(), next(), endS.getName());
