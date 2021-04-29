@@ -76,73 +76,71 @@ public class RE implements REInterface {
 
 
     /**
-     * Looks at the regex to determine what it needs to build
+     * build a term(NFA)  based on factor
      *
-     * @return parsed portion of the regex in the form of an NFA
+     * @return the term( empty or multiple factors) that is already in the form of an NFA
      */
     private NFA term() {
-        NFA factor = new NFA();
+        NFA startFactor = new NFA();
 
         while (more() && peek() != ')' && peek() != '|') {
-            NFA fact = factor();
+            NFA newFactor = factor();
 
-            //If RE tries to process regex and there no operations to perform, just return simplest NFA
-            if (factor.getStates().isEmpty()) {
-                factor = fact;
-                //If there are multiple terms following each other, perform concatenate operation on the NFAs
-            } else {
-                factor = concat(factor, fact);
+            //If a term is just an empty sequence of factors
+            if (startFactor.getStates().isEmpty()) {
+                startFactor = newFactor;
+            } else {//concatentae the term if there are multple factor
+                startFactor = concat(startFactor, newFactor);
 
             }
         }
 
-        return factor;
+        return startFactor;
     }
 
     /**
-     * Concatenates the two NFAs, when two NFAs are in the regex together
      *
-     * @param reg1 - the NFA we are adding reg2 onto
-     * @param reg2 - additional NFA that follows reg1
-     * @return NFA that has been concatenated
+     * Combing 2 NFAs in a specific order, nfa2 onto nfa1
+     * @param nfa1 - base nfa
+     * @param nfa2 - nfa to be combined to the base nfa
+     * @return concatenated NFA
      */
-    private NFA concat(NFA reg1, NFA reg2) {
-        //Get final states and name of start state in second NFA
-        String reg2Start = reg2.getStartState().getName();
-        Set<State> reg1Finals = reg1.getFinalStates();
+    private NFA concat(NFA nfa1, NFA nfa2) {
+        //Get final states of nfa1
+        Set<State> nfa1FinalStates = nfa1.getFinalStates();
 
-        //Add all states from second NFA to first NFA
-        reg1.addNFAStates(reg2.getStates());
+        //add all the states from nfa2 to nfa1
+        nfa1.addNFAStates(nfa2.getStates());
 
-        //Make sure both alphabets are included
-        reg1.addAbc(reg2.getABC());
+        //combing the alphabet
+        nfa1.addAbc(nfa2.getABC());
 
-        Iterator<State> itr = reg1Finals.iterator();
+        Iterator<State> itr = nfa1FinalStates.iterator();
         while (itr.hasNext()) {
-            State state = itr.next(); // might be wrong
+            State state = itr.next();
             ((NFAState) state).setNonFinal(); //cast all the State objects into NFAState and set them to be non-final
-            reg1.addTransition(state.getName(), 'e', reg2Start);//from the 'non-final' states, use an empty string e, to transit to the start state of nfa2
+            nfa1.addTransition(state.getName(), 'e', nfa2.getStartState().getName());//from the 'non-final' states, use an empty string e, to transit to the start state of nfa2
 
         }
 
 
-        return reg1;
+        return nfa1;
     }
 
     /**
-     * A factor is a base followed by a possibly empty sequence of '*'.
+     * build a factor from base, the base might be repetitive because of the *
      *
-     * @return root NFA or root with the star operator if the regex has a '*'
+     * @return an NFA built from a base(regex), either with or without the '*'
      */
     private NFA factor() {
-        NFA root = base();
+        NFA base = base();
 
-        //If star op is needed, descend into recursion
+      
         while (more() && peek() == '*') {
             eat('*');
-            root = star(root);
+            base = star(base);
         }
-        return root;
+        return base;
     }
 
     /**
