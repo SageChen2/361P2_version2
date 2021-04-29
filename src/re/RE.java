@@ -27,6 +27,7 @@ public class RE implements REInterface {
     @Override
     public NFA getNFA() {
         return regEx();
+
     }
 
     /*
@@ -40,9 +41,11 @@ public class RE implements REInterface {
         if(more() && peek() == '|'){
             eat('|');
             NFA isRegex = regEx();
+            //System.out.println(isRegex.getABC());//print alphabet
             return union(noUnion, isRegex);
         }
         else{
+            //System.out.println(noUnion.getABC());
             return noUnion;
         }
     }
@@ -156,7 +159,7 @@ public class RE implements REInterface {
         nfa1.addNFAStates(nfa2.getStates());
 
         //combine the alphabets of nfa1 and nfa2 and store in the alphabet of nfa1
-        nfa1.addAbc(nfa2.getABC());
+        //nfa1.addAbc(nfa2.getABC());
 
         //iterate through all the final states of nfa1 and set them to be non-final states
         //also add nfa1's transitions to the start of nfa2
@@ -168,6 +171,7 @@ public class RE implements REInterface {
 
         }
 
+        nfa1.addAbc(nfa2.getABC());//position might not matter
 
         return nfa1;
     }
@@ -206,11 +210,13 @@ public class RE implements REInterface {
     }
 
     /**
-     *
+     * need to add alphabet in the base
      */
     private NFA base() {
+
         //A base is a character, an escaped character, or a parenthesized regular expression.
         NFA base = new NFA();
+        Set<Character> alphabet = new LinkedHashSet<Character>();
 
         if (peek() == '(') {
             eat('(');
@@ -223,8 +229,9 @@ public class RE implements REInterface {
             base.addStartState(startS.getName());
             base.addFinalState(endS.getName());
             base.addTransition(startS.getName(), next(), endS.getName());
-
+            //
         }
+
         return base;
     }
 
