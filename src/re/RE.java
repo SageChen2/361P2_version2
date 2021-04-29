@@ -9,32 +9,32 @@ import fa.nfa.NFA;
 import fa.nfa.NFAState;
 
 /**
- * Constructs an NFA for a given regular expression
+ * This class constructs an NFA for a given regular expression
  *
- * @author kellywilmot bridgettemilgie
+ * @author Zixiao Chen, Daniel McDougall
  */
 public class RE implements REInterface {
-    String regEx = "";
-    int stateCounter = 0;
+    String regEx;
+    int stateInc = 0;
 
     /**
      * Constructor
      *
-     * @param regEx String of the regular expression
+     * @param regEx this is the regular expression to be converted
      */
     public RE(String regEx) {
         this.regEx = regEx;
     }
 
     /**
-     * @return The NFA built from the regular expression
+     * @return The NFA built based on the regular expression
      */
     public NFA getNFA() {
         return regEx();
     }
 
     /**
-     * Builds an NFA from the regular expression
+     *  This method will convert a regular expression into an NFA
      *
      * @return NFA
      */
@@ -47,7 +47,7 @@ public class RE implements REInterface {
             eat('|');
             NFA regex = regEx();
             return union(term, regex);
-            //If no union is needed, just return the simple NFA
+            //If no union is needed, just return the NFA
         } else {
             return term;
         }
@@ -61,10 +61,7 @@ public class RE implements REInterface {
     private NFA union(NFA nfa1, NFA nfa2) {
         NFA result = new NFA();
 
-        ///start state(might be wrong)
-        //NFAState startState = new NFAState(String.valueOf(stateInc));
-
-        String startState = String.valueOf(stateCounter++);//might be wrong
+        String startState = String.valueOf(stateInc++);
         result.addStartState(startState);
         result.addNFAStates(nfa1.getStates());
         result.addNFAStates(nfa2.getStates());
@@ -138,7 +135,7 @@ public class RE implements REInterface {
      * @return root NFA or root with the star operator if the regex has a '*'
      */
     private NFA factor() {
-        NFA root = root();
+        NFA root = base();
 
         //If star op is needed, descend into recursion
         while (more() && peek() == '*') {
@@ -151,41 +148,40 @@ public class RE implements REInterface {
     /**
      * Handles the star operator
      *
-     * @param root - NFA we are building upon
+     * @param base - NFA we are building upon
      * @return NFA - the previous NFA has now incorporated the star operator
      */
-    private NFA star(NFA root) {
+    private NFA star(NFA base) {
 
         NFA retNFA = new NFA();
 
-        //Make new start state
-        String start = "q" + stateCounter++;
-        //stateCounter++;
-        retNFA.addStartState(start);
+        NFAState startS = new NFAState(String.valueOf(stateInc++));
+        NFAState endS = new NFAState(String.valueOf(stateInc++));
 
-        //Make new final state
-        String finState = "q" + stateCounter++;
-        //stateCounter++;
-        retNFA.addFinalState(finState);
+        //add new start state
+        retNFA.addStartState(startS.getName());
+
+        //add new final state
+        retNFA.addFinalState(endS.getName());
 
         //Add all states from root to new NFA
-        retNFA.addNFAStates(root.getStates());
+        retNFA.addNFAStates(base.getStates());
 
         //Add empty transitions because star allows for 0 occurrences of term/NFA
-        retNFA.addTransition(start, 'e', finState);
-        retNFA.addTransition(finState, 'e', root.getStartState().getName());
+        retNFA.addTransition(startS.getName(), 'e', endS.getName());
+        retNFA.addTransition(endS.getName(), 'e', base.getStartState().getName());
 
         //Tie new start to root NFA
-        retNFA.addTransition(start, 'e', root.getStartState().getName());
+        retNFA.addTransition(startS.getName(), 'e', base.getStartState().getName());
 
         //Make sure old alphabet is included
-        retNFA.addAbc(root.getABC());
+        retNFA.addAbc(base.getABC());
 
 
-        Iterator<State> itr = root.getFinalStates().iterator();
+        Iterator<State> itr = base.getFinalStates().iterator();
         while (itr.hasNext()) {
             State state = itr.next();
-            retNFA.addTransition(state.getName(), 'e', finState);
+            retNFA.addTransition(state.getName(), 'e', endS.getName());
 
             Iterator<State> itr2 = retNFA.getFinalStates().iterator();
             while (itr2.hasNext()) {
@@ -208,7 +204,7 @@ public class RE implements REInterface {
      *
      * @return an NFA built from the next symbol or within the parenthesis
      */
-    private NFA root() {
+    private NFA base() {
         //Check if next symbol requires changing precedent using '()'
         switch (peek()) {
             case '(':
@@ -224,22 +220,24 @@ public class RE implements REInterface {
     /**
      * Builds an NFA from the given character
      *
-     * @param c Character to define transition on
+     * @param symbol Character to define transition on
      * @return NFA from given character
      */
-    private NFA symbol(char c) {
+    private NFA symbol(char symbol) {
         NFA nfa = new NFA();
 
         //Make a new simple NFA with 2 states and a transition on char c
-        String s = "q" + stateCounter++;
-        nfa.addStartState(s);
-        String f = "q" + stateCounter++;
-        nfa.addFinalState(f);
+        NFAState startS = new NFAState(String.valueOf(stateInc++));
 
-        nfa.addTransition(s, c, f);
+        NFAState endS = new NFAState(String.valueOf(stateInc++));
+
+        nfa.addStartState(startS.getName());
+        nfa.addFinalState(endS.getName());
+
+        nfa.addTransition(startS.getName(), symbol, endS.getName());
 
         Set<Character> alphabet = new LinkedHashSet<Character>();
-        alphabet.add(c);
+        alphabet.add(symbol);
         nfa.addAbc(alphabet);
         return nfa;
 
