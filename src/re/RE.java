@@ -213,34 +213,24 @@ public class RE implements REInterface {
                 eat(')');
                 return reg;
             default:
-                return symbol(next());
+            NFA nfa = new NFA();
+
+            //Make a new simple NFA with 2 states and a transition on char c
+            NFAState startS = new NFAState(String.valueOf(stateInc++));
+    
+            NFAState endS = new NFAState(String.valueOf(stateInc++));
+    
+            nfa.addStartState(startS.getName());
+            nfa.addFinalState(endS.getName());
+            //get the next char to make a transition, but only call next() once
+            char nextChar = next();
+            nfa.addTransition(startS.getName(), nextChar, endS.getName());
+    
+            Set<Character> alphabet = new LinkedHashSet<Character>();
+            alphabet.add(nextChar);
+            nfa.addAbc(alphabet);
+            return nfa;
         }
-    }
-
-    /**
-     * Builds an NFA from the given character
-     *
-     * @param symbol Character to define transition on
-     * @return NFA from given character
-     */
-    private NFA symbol(char symbol) {
-        NFA nfa = new NFA();
-
-        //Make a new simple NFA with 2 states and a transition on char c
-        NFAState startS = new NFAState(String.valueOf(stateInc++));
-
-        NFAState endS = new NFAState(String.valueOf(stateInc++));
-
-        nfa.addStartState(startS.getName());
-        nfa.addFinalState(endS.getName());
-
-        nfa.addTransition(startS.getName(), symbol, endS.getName());
-
-        Set<Character> alphabet = new LinkedHashSet<Character>();
-        alphabet.add(symbol);
-        nfa.addAbc(alphabet);
-        return nfa;
-
     }
 
     /**
