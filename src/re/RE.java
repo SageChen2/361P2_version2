@@ -169,8 +169,8 @@ public class RE implements REInterface {
     }
 
     /**
-     * Root is a character, an escaped character, or a parenthesized regular expression.
-     * @return an NFA built from the next symbol or within the parenthesis
+     * Base can be a character or a regex
+     * @return nfa made from char or regex base
      */
     private NFA base() {
         //check parenthesis case for base
