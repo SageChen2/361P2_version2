@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\danie\\Desktop\\finalp3\\src\\CS361FA.jar"
+    ]
+}
