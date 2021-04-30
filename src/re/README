@@ -1,0 +1,48 @@
+# Project 3: Regular Expressions
+
+* Author: Daniel McDougall (Section 2) and Zixiao Chen (Section 1)
+* Class: CS361 Section 1 and 2
+* Semester: Spring 2021
+
+## Overview
+
+This Java application constructs an NFA for a given regular expression. It has to
+parse input and check for start operators, parenthesis, etc. It uses recursive
+algorithms and Object Oriented- thinking to achieve the nfa construction in 
+efficient timing.
+
+## Compiling and Using
+
+To compile, execute the following command at the top of the project directory:
+```
+$ javac -cp ".:./CS361FA.jar" re/REDriver.java
+```
+If you are using a windows machine, use a semicolon instead
+```
+$ javac -cp ".;./CS361FA.jar" re/REDriver.java
+```
+
+Run the compiled class with the command (at the top of the directory as well):
+```
+$ java -cp ".:./CS361FA.jar" re.REDriver ./tests/p3tc1.txt
+Or
+$ java -cp ".:./CS361FA.jar" re.REDriver ./tests/p3tc1.txt
+Or
+$ java -cp ".:./CS361FA.jar" re.REDriver ./tests/p3tc1.txt
+```
+again, use a semicolon for the java dependencies if on a windows machine
+
+## Discussion
+
+
+
+## Extra Credit
+
+No extra credit was given or offered for this project
+
+## Sources used
+
+https://piazza.com/class_profile/get_resource/kjoxrsmcshl1oe/kn0hanix57t7km
+http://matt.might.net/articles/parsing-regex-with-recursive-descent/
+
+And the NFA API's that we could view from the jar file using Intellij
