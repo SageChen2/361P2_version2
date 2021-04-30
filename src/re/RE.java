@@ -4,14 +4,13 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import fa.State;
-import fa.nfa.NFA;
-import fa.nfa.NFAState;
+import fa.*;
+import fa.nfa.*;
 
 /**
  * This class constructs an NFA for a given regular expression
  *
- * @author Zixiao Chen, Daniel McDougall
+ * @author Zixiao Chen (Section 1), Daniel McDougall (Section 2)
  */
 public class RE implements REInterface {
     String regEx;
