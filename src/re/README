@@ -34,7 +34,27 @@ again, use a semicolon for the java dependencies if on a windows machine
 
 ## Discussion
 
+First, we thought the inclusion of the jar file didn't make any sense. Not only is the API 
+different from waht we individually made for p2, but on certain systems and IDE's we could
+not even view the files within the jar file. We had to use Intellij just to view the jar file
+and the methods we needed. We spent way too much time just trying to set up the project. We
+also had issues with compiling the project because of the given javac command. I was sure everything
+was right on my end, so I ran the exact same file system on onyx and the project compiled. I would
+suggest telling your future students that if developing on a windows system, the javac command of
+$ javac -cp ".:./CS361FA.jar" re/REDriver.java needs to be done with a semiclon, i.e. ".;./CS361FA.jar".
 
+We read through the instructions and analyzed the recursive descent algorithm. Viewing the
+documentation for peek(), next(), and eat(), it was simple to make those methods and see how
+they communicate. The main issue was parsing input with primitives or sub-classes, as the given
+documentation shows. We made union(), star(), and combine() methods to parse input for the
+three regex terms (base, factor, and term). This let us simplify the needed methods discussed
+in the documentation without needing subclasses or anything special. 
+
+Star is created in case a base regex term needs to include repetition, because thats what the 
+star operator is only used for. Union and combine are used to group created NFA's together. In 
+union order does not matter, but in combine the order does matter. In term(), you can have
+multiple factors, or a possibly empty sequence of factors, meaning the order matters because
+a factor could be empty. 
 
 ## Extra Credit
 

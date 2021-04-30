@@ -94,7 +94,7 @@ public class RE implements REInterface {
     }
 
     /**
-     * combine two nfas
+     * combine two nfas (with order)
      * @param nfa1 - base nfa
      * @param nfa2 - nfa added to nfa1
      * @return combined nfa
